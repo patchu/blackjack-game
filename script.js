@@ -94,7 +94,7 @@ function displayHands(revealDealerCard = false) {
 function endGame() {
   gameOver = true;
   document.getElementById('split').style.display = 'none';
-  document.getElementById('result').textContent = '';
+
   const dealerScore = calculateScore(dealerHand);
   const dealerBust = dealerScore > 21;
 
@@ -103,6 +103,7 @@ function endGame() {
     const score = calculateScore(hand);
     const bust = score > 21;
     let result = '';
+
     if (bust) {
       result = 'Busted!';
     } else if (dealerBust || score > dealerScore) {
@@ -112,11 +113,15 @@ function endGame() {
     } else {
       result = 'Push.';
     }
+
     resultHTML += `Hand ${i + 1}: ${result} `;
   });
 
-  document.getElementById('result').textContent = resultHTML;
+  // ✅ Only update result if resultHTML is not empty
+  const resultElement = document.getElementById('result');
+  resultElement.textContent = resultHTML.trim() || 'Dealer wins by default.';
 }
+
 
 function dealerPlay() {
   // Check if all player hands are busted
