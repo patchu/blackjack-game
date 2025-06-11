@@ -172,6 +172,8 @@ document.getElementById('split').addEventListener('click', () => {
   }
 });
 
+document.getElementById('restart').addEventListener('click', startGame);
+
 document.addEventListener('keydown', (event) => {
   if (gameOver) return;
 
@@ -180,6 +182,8 @@ document.addEventListener('keydown', (event) => {
     document.getElementById('hit').click();
   } else if (key === 's') {
     document.getElementById('stand').click();
+  } else if (key === '4') {
+    document.getElementById('restart').click();
   } else if (key === 'y') {
     const splitBtn = document.getElementById('split');
     if (splitBtn.style.display !== 'none') {
@@ -187,7 +191,5 @@ document.addEventListener('keydown', (event) => {
     }
   }
 });
-
-document.getElementById('restart').addEventListener('click', startGame);
 
 startGame();
