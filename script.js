@@ -119,11 +119,10 @@ function endGame() {
 }
 
 function dealerPlay() {
-  displayHands(true);
   while (calculateScore(dealerHand) < 17) {
     dealerHand.push(deck.pop());
-    displayHands(true);
   }
+  displayHands(true); // only after all dealer cards have been drawn
   endGame();
 }
 
