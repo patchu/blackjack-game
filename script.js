@@ -38,7 +38,8 @@ function calculateScore(hand) {
 }
 
 function isPair(hand) {
-  return hand.length === 2 && hand[0].value === hand[1].value;
+  if (!hand || hand.length !== 2) return false;
+  return hand[0].value === hand[1].value;
 }
 
 function displayHands(revealDealerCard = false) {
@@ -85,11 +86,16 @@ function displayHands(revealDealerCard = false) {
     container.appendChild(handBox);
   });
 
-  // Split button visibility
+  // Split button visibility — ✅ fixed to prevent undefined error
   const splitBtn = document.getElementById('split');
   const hand = playerHands[currentHandIndex];
-  splitBtn.style.display = isPair(hand) && splitCount < 2 ? 'inline-block' : 'none';
+  if (hand && isPair(hand) && splitCount < 2) {
+    splitBtn.style.display = 'inline-block';
+  } else {
+    splitBtn.style.display = 'none';
+  }
 }
+
 
 function endGame() {
   gameOver = true;
