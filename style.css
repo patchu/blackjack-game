@@ -21,3 +21,10 @@ body {
   width: 40px;
   border-radius: 4px;
 }
+
+.card.back {
+  background-color: #333;
+  color: #333;
+  border: 1px solid #000;
+  content: '';
+}
