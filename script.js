@@ -200,7 +200,7 @@ document.addEventListener('keydown', (event) => {
   // if (gameOver) return;
 
   const key = event.key.toLowerCase();
-  if (key === 'h') {
+  if (key === 'h' || key === 'a') {
     document.getElementById('hit').click();
   } else if (key === 's') {
     document.getElementById('stand').click();
