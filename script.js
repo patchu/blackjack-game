@@ -182,7 +182,7 @@ document.addEventListener('keydown', (event) => {
     document.getElementById('hit').click();
   } else if (key === 's') {
     document.getElementById('stand').click();
-  } else if (key === '4') {
+  } else if (key === 'r') {
     document.getElementById('restart').click();
   } else if (key === 'y') {
     const splitBtn = document.getElementById('split');
