@@ -204,7 +204,7 @@ document.addEventListener('keydown', (event) => {
     document.getElementById('hit').click();
   } else if (key === 's') {
     document.getElementById('stand').click();
-  } else if (key === 'r') {
+  } else if (key === 'r' || key === 'd') {
     document.getElementById('restart').click();
   } else if (key === 'y') {
     const splitBtn = document.getElementById('split');
