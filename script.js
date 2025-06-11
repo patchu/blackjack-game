@@ -119,10 +119,20 @@ function endGame() {
 }
 
 function dealerPlay() {
+  // Check if all player hands are busted
+  const allBusted = playerHands.every(hand => calculateScore(hand) > 21);
+  if (allBusted) {
+    displayHands(true); // still show full dealer hand
+    endGame();
+    return;
+  }
+
+  // Otherwise, dealer draws as normal
   while (calculateScore(dealerHand) < 17) {
     dealerHand.push(deck.pop());
   }
-  displayHands(true); // only after all dealer cards have been drawn
+
+  displayHands(true);
   endGame();
 }
 
