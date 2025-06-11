@@ -115,6 +115,7 @@ function endGame() {
     }
 
     resultHTML += `Hand ${i + 1}: ${result} `;
+    console.log("Setting result to:", resultHTML);
   });
 
   // ✅ Only update result if resultHTML is not empty
