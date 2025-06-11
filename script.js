@@ -1,19 +1,19 @@
 let deck = [];
-let playerHand = [];
+let playerHands = [[]];
 let dealerHand = [];
+let currentHandIndex = 0;
+let splitCount = 0;
 let gameOver = false;
 
 function createDeck() {
   const suits = ['♠', '♥', '♦', '♣'];
   const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
   deck = [];
-
   for (let suit of suits) {
     for (let value of values) {
       deck.push({ value, suit });
     }
   }
-
   deck = deck.sort(() => Math.random() - 0.5);
 }
 
@@ -26,107 +26,151 @@ function getCardValue(card) {
 function calculateScore(hand) {
   let score = 0;
   let aces = 0;
-
   for (let card of hand) {
     score += getCardValue(card);
     if (card.value === 'A') aces++;
   }
-
   while (score > 21 && aces > 0) {
     score -= 10;
     aces--;
   }
-
   return score;
 }
 
-function displayHands(revealDealerCard = false) {
-  const dealerHandDiv = document.getElementById('dealer-hand');
-  const playerHandDiv = document.getElementById('player-hand');
-  dealerHandDiv.innerHTML = '';
-  playerHandDiv.innerHTML = '';
+function isPair(hand) {
+  return hand.length === 2 && hand[0].value === hand[1].value;
+}
 
-  // Dealer's cards
+function displayHands(revealDealerCard = false) {
+  // Dealer hand
+  const dealerHandDiv = document.getElementById('dealer-hand');
+  dealerHandDiv.innerHTML = '';
   dealerHand.forEach((card, index) => {
     const cardDiv = document.createElement('div');
     cardDiv.classList.add('card');
-
     if (index === 0 && !revealDealerCard) {
       cardDiv.classList.add('back');
       cardDiv.textContent = '🂠';
     } else {
       cardDiv.textContent = `${card.value}${card.suit}`;
     }
-
     dealerHandDiv.appendChild(cardDiv);
   });
-
-  // Player's cards
-  playerHand.forEach(card => {
-    const cardDiv = document.createElement('div');
-    cardDiv.classList.add('card');
-    cardDiv.textContent = `${card.value}${card.suit}`;
-    playerHandDiv.appendChild(cardDiv);
-  });
-
-  // Scores
   document.getElementById('dealer-score').textContent =
     revealDealerCard ? `Score: ${calculateScore(dealerHand)}` : 'Score: ?';
-  document.getElementById('player-score').textContent =
-    `Score: ${calculateScore(playerHand)}`;
+
+  // Player hands
+  const container = document.getElementById('player-hands-container');
+  container.innerHTML = '';
+  playerHands.forEach((hand, index) => {
+    const handBox = document.createElement('div');
+    handBox.classList.add('player-hand-box');
+    if (index === currentHandIndex) handBox.classList.add('active');
+
+    const label = document.createElement('p');
+    label.textContent = `Hand ${index + 1}: ${calculateScore(hand)}`;
+    handBox.appendChild(label);
+
+    const handDiv = document.createElement('div');
+    handDiv.classList.add('hand');
+
+    hand.forEach(card => {
+      const cardDiv = document.createElement('div');
+      cardDiv.classList.add('card');
+      cardDiv.textContent = `${card.value}${card.suit}`;
+      handDiv.appendChild(cardDiv);
+    });
+
+    handBox.appendChild(handDiv);
+    container.appendChild(handBox);
+  });
+
+  // Split button visibility
+  const splitBtn = document.getElementById('split');
+  const hand = playerHands[currentHandIndex];
+  splitBtn.style.display = isPair(hand) && splitCount < 2 ? 'inline-block' : 'none';
 }
 
 function endGame() {
-  const playerScore = calculateScore(playerHand);
-  const dealerScore = calculateScore(dealerHand);
-  let result = '';
-
-  if (playerScore > 21) {
-    result = 'You busted! Dealer wins.';
-  } else if (dealerScore > 21 || playerScore > dealerScore) {
-    result = 'You win!';
-  } else if (dealerScore > playerScore) {
-    result = 'Dealer wins!';
-  } else {
-    result = 'Push!';
-  }
-
-  document.getElementById('result').textContent = result;
   gameOver = true;
+  document.getElementById('split').style.display = 'none';
+  document.getElementById('result').textContent = '';
+  const dealerScore = calculateScore(dealerHand);
+  const dealerBust = dealerScore > 21;
+
+  let resultHTML = '';
+  playerHands.forEach((hand, i) => {
+    const score = calculateScore(hand);
+    const bust = score > 21;
+    let result = '';
+    if (bust) {
+      result = 'Busted!';
+    } else if (dealerBust || score > dealerScore) {
+      result = 'Win!';
+    } else if (score < dealerScore) {
+      result = 'Lose!';
+    } else {
+      result = 'Push.';
+    }
+    resultHTML += `Hand ${i + 1}: ${result} `;
+  });
+
+  document.getElementById('result').textContent = resultHTML;
 }
 
 function dealerPlay() {
-  displayHands(true); // reveal hidden card
+  displayHands(true);
   while (calculateScore(dealerHand) < 17) {
     dealerHand.push(deck.pop());
-    displayHands(true); // update each time
+    displayHands(true);
   }
   endGame();
 }
 
 function startGame() {
   createDeck();
-  playerHand = [deck.pop(), deck.pop()];
   dealerHand = [deck.pop(), deck.pop()];
+  playerHands = [[deck.pop(), deck.pop()]];
+  currentHandIndex = 0;
+  splitCount = 0;
   gameOver = false;
   document.getElementById('result').textContent = '';
-  displayHands(false); // hide one dealer card
+  displayHands(false);
+}
+
+function nextHand() {
+  currentHandIndex++;
+  if (currentHandIndex < playerHands.length) {
+    displayHands(false);
+  } else {
+    dealerPlay();
+  }
 }
 
 document.getElementById('hit').addEventListener('click', () => {
   if (gameOver) return;
-  playerHand.push(deck.pop());
+  const hand = playerHands[currentHandIndex];
+  hand.push(deck.pop());
   displayHands(false);
-
-  if (calculateScore(playerHand) > 21) {
-    displayHands(true); // reveal dealer hand if player busts
-    endGame();
+  if (calculateScore(hand) > 21) {
+    nextHand();
   }
 });
 
 document.getElementById('stand').addEventListener('click', () => {
   if (gameOver) return;
-  dealerPlay();
+  nextHand();
+});
+
+document.getElementById('split').addEventListener('click', () => {
+  if (gameOver) return;
+  const hand = playerHands[currentHandIndex];
+  if (isPair(hand) && splitCount < 2) {
+    const [card1, card2] = hand;
+    playerHands.splice(currentHandIndex, 1, [card1, deck.pop()], [card2, deck.pop()]);
+    splitCount++;
+    displayHands(false);
+  }
 });
 
 document.getElementById('restart').addEventListener('click', startGame);
