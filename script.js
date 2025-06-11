@@ -1,4 +1,3 @@
-// script.js
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
@@ -41,22 +40,40 @@ function calculateScore(hand) {
   return score;
 }
 
-function displayHands() {
+function displayHands(revealDealerCard = false) {
   const dealerHandDiv = document.getElementById('dealer-hand');
   const playerHandDiv = document.getElementById('player-hand');
   dealerHandDiv.innerHTML = '';
   playerHandDiv.innerHTML = '';
 
-  dealerHand.forEach(card => {
-    dealerHandDiv.innerHTML += `<div class="card">${card.value}${card.suit}</div>`;
+  // Dealer's cards
+  dealerHand.forEach((card, index) => {
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+
+    if (index === 0 && !revealDealerCard) {
+      cardDiv.classList.add('back');
+      cardDiv.textContent = '🂠';
+    } else {
+      cardDiv.textContent = `${card.value}${card.suit}`;
+    }
+
+    dealerHandDiv.appendChild(cardDiv);
   });
 
+  // Player's cards
   playerHand.forEach(card => {
-    playerHandDiv.innerHTML += `<div class="card">${card.value}${card.suit}</div>`;
+    const cardDiv = document.createElement('div');
+    cardDiv.classList.add('card');
+    cardDiv.textContent = `${card.value}${card.suit}`;
+    playerHandDiv.appendChild(cardDiv);
   });
 
-  document.getElementById('dealer-score').textContent = `Score: ${calculateScore(dealerHand)}`;
-  document.getElementById('player-score').textContent = `Score: ${calculateScore(playerHand)}`;
+  // Scores
+  document.getElementById('dealer-score').textContent =
+    revealDealerCard ? `Score: ${calculateScore(dealerHand)}` : 'Score: ?';
+  document.getElementById('player-score').textContent =
+    `Score: ${calculateScore(playerHand)}`;
 }
 
 function endGame() {
@@ -79,10 +96,11 @@ function endGame() {
 }
 
 function dealerPlay() {
+  displayHands(true); // reveal hidden card
   while (calculateScore(dealerHand) < 17) {
     dealerHand.push(deck.pop());
+    displayHands(true); // update each time
   }
-  displayHands();
   endGame();
 }
 
@@ -92,15 +110,16 @@ function startGame() {
   dealerHand = [deck.pop(), deck.pop()];
   gameOver = false;
   document.getElementById('result').textContent = '';
-  displayHands();
+  displayHands(false); // hide one dealer card
 }
 
 document.getElementById('hit').addEventListener('click', () => {
   if (gameOver) return;
   playerHand.push(deck.pop());
-  displayHands();
+  displayHands(false);
 
   if (calculateScore(playerHand) > 21) {
+    displayHands(true); // reveal dealer hand if player busts
     endGame();
   }
 });
