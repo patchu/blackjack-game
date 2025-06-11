@@ -197,7 +197,7 @@ document.getElementById('split').addEventListener('click', () => {
 document.getElementById('restart').addEventListener('click', startGame);
 
 document.addEventListener('keydown', (event) => {
-  if (gameOver) return;
+  // if (gameOver) return;
 
   const key = event.key.toLowerCase();
   if (key === 'h') {
