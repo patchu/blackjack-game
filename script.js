@@ -173,6 +173,22 @@ document.getElementById('split').addEventListener('click', () => {
   }
 });
 
+document.addEventListener('keydown', (event) => {
+  if (gameOver) return;
+
+  const key = event.key.toLowerCase();
+  if (key === 'h') {
+    document.getElementById('hit').click();
+  } else if (key === 's') {
+    document.getElementById('stand').click();
+  } else if (key === 'y') {
+    const splitBtn = document.getElementById('split');
+    if (splitBtn.style.display !== 'none') {
+      splitBtn.click();
+    }
+  }
+});
+
 document.getElementById('restart').addEventListener('click', startGame);
 
 startGame();
