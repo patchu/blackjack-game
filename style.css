@@ -1,4 +1,3 @@
-/* style.css */
 body {
   font-family: sans-serif;
   text-align: center;
@@ -25,6 +24,25 @@ body {
 .card.back {
   background-color: #333;
   color: #333;
-  border: 1px solid #000;
-  content: '';
+}
+
+#player-hands-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.player-hand-box {
+  border: 2px solid white;
+  margin: 10px;
+  padding: 10px;
+  width: 160px;
+}
+
+.player-hand-box.active {
+  border-color: yellow;
+}
+
+#controls {
+  margin-top: 20px;
 }
